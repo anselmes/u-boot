@@ -40,6 +40,10 @@
 	status = "okay";
 };
 
+&nand {
+	bootph-all;
+};
+
 &mmc {
 	drvsel = <3>;
 	smplsel = <0>;
