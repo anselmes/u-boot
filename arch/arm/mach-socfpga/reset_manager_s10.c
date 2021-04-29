@@ -266,7 +266,18 @@ static __always_inline void socfpga_s2f_bridges_reset(int enable,
 void socfpga_bridges_reset(int enable, unsigned int mask)
 {
 	if (!IS_ENABLED(CONFIG_SPL_BUILD) && IS_ENABLED(CONFIG_SPL_ATF)) {
-		u64 arg = enable;
+		u64 arg[2];
+		int ret;
+
+		/* Set bit-1 to indicate has mask value in arg[1]. */
+		arg[0] = (enable & BIT(0)) | BIT(1);
+		arg[1] = mask;
+
+		ret = invoke_smc(INTEL_SIP_SMC_HPS_SET_BRIDGES, arg,
+				 ARRAY_SIZE(arg), NULL, 0);
+		if (ret)
+			printf("Failed to %s the HPS bridges, check bridges availability. Status %d.\n",
+				enable ? "enable" : "disable", ret);
 	} else {
 		socfpga_s2f_bridges_reset(enable, mask);
 		socfpga_f2s_bridges_reset(enable, mask);
