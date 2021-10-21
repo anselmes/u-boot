@@ -21,7 +21,12 @@ struct altera_sdram_plat {
 	bool dualport;
 	bool dualemif;
 };
-#else
+#elif IS_ENABLED(CONFIG_TARGET_SOCFPGA_AGILEX7)
+struct altera_sdram_plat {
+	fdt_addr_t mpfe_base_addr;
+	bool multichannel_interleaving;
+};
+ #else
 struct altera_sdram_plat {
 	void __iomem *hmc;
 	void __iomem *ddr_sch;
