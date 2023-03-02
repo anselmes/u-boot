@@ -17,6 +17,10 @@
  */
 /* sysmgr.boot_scratch_cold4 & 5 (64bit) will be used for PSCI_CPU_ON call */
 #define CPU_RELEASE_ADDR		0xFFD12210
+/* sysmgr.boot_scratch_cold8 bit 17 (1bit) will be used to check whether CPU0
+ * is being powered off/on from kernel
+ */
+#define BOOT_SCRATCH_COLD8		0xFFD12220
 
 /*
  * sysmgr.boot_scratch_cold6 & 7 (64bit) will be used by master CPU to
@@ -29,6 +33,13 @@
  * Indicate L2 reset is done. HPS should trigger warm reset via RMR_EL3.
  */
 #define L2_RESET_DONE_REG		0xFFD12218
+
+/*
+ * sysmgr.boot_scratch_cold8 bit 19 (1bit) will be used to check whether CPU0
+ * is being powered off/on from kernel
+ */
+#define BOOT_SCRATCH_COLD8		0xFFD12220
+
 /* Magic word to indicate L2 reset is completed */
 #define L2_RESET_DONE_STATUS		0x1228E5E7
 #define CFG_SYS_MEM_RESERVE_SECURE	0	/* using OCRAM, not DDR */
