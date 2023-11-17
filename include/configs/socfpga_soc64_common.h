@@ -125,7 +125,11 @@
 #endif
 
 #define BOOTENV_DEV_NAND(devtypeu, devtypel, instance) \
-	"bootcmd_nand=ubi detach; ubi part root && " \
+	"bootcmd_nand=ubi detach && " \
+	"setenv mtdids 'nor0=nor0,nand0=nand.0' && " \
+	"setenv mtdparts 'mtdparts=nor0:66m(u-boot),190m(qspi_root);nand.0:2m(u-boot),500m(root)' && " \
+	"env select UBI; saveenv && " \
+	"ubi part root && " \
 	"ubi readvol ${scriptaddr} script && " \
 	"echo NAND: Trying to boot script at ${scriptaddr} && " \
 	"source ${scriptaddr}; " \
