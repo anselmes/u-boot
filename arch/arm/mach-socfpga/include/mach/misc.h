@@ -58,6 +58,6 @@ void socfpga_pl310_clear(void);
 void socfpga_get_managers_addr(void);
 void socfpga_get_sys_mgr_addr(const char *compat);
 int qspi_flash_software_reset(void);
-bool is_agilex5_A5F0(void);
+bool is_agilex5_A36F0(void);
 
 #endif /* _SOCFPGA_MISC_H_ */
