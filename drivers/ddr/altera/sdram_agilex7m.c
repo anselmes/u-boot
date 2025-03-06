@@ -10,6 +10,7 @@
 #include <ram.h>
 #include <reset.h>
 #include <wait_bit.h>
+#include <wdt.h>
 #include <asm/arch/system_manager.h>
 #include <linux/bitfield.h>
 #include "iossm_mailbox.h"
@@ -422,8 +423,23 @@ int sdram_mmr_init_full(struct udevice *dev)
 		 * enabled to preserve memory content
 		 */
 		if (io96b_ctrl->ecc_status) {
-			full_mem_init = hps_ocram_dbe_status() | ddr_ecc_dbe_status() |
-					is_ddr_hang_be4_rst;
+			if (ecc_interrupt_status(io96b_ctrl)) {
+				if (CONFIG_IS_ENABLED(WDT)) {
+					struct udevice *wdt;
+
+					printf("DDR: ECC error recover start now\n");
+					ret = uclass_first_device_err(UCLASS_WDT, &wdt);
+					if (ret) {
+						printf("DDR: Failed to trigger watchdog reset\n");
+						hang();
+					}
+
+					wdt_expire_now(wdt, 0);
+				}
+				hang();
+			}
+
+			full_mem_init = hps_ocram_dbe_status() | is_ddr_hang_be4_rst;
 			if (full_mem_init || !(reset_t == WARM_RESET || reset_t == COLD_RESET)) {
 				debug("%s: Needed to fully initialize DDR memory\n",
 				      io96b_ctrl->ddr_type);
