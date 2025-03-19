@@ -257,7 +257,7 @@ static u32 uib_mailbox_read_request(u32 target_read_addr, phys_addr_t csr_addr)
 	 */
 	debug("%s: #4 Read MBRDDATA_VALID from UIB_R_MBRDCTL\n", __func__);
 	ret = wait_for_bit_le32((const void *)csr_addr + UIB_R_MBRDCTL,
-				UIB_R_MBRDCTL_MBRDDATA_VALID, false, TIMEOUT, false);
+				UIB_R_MBRDCTL_MBRDDATA_VALID, true, TIMEOUT, false);
 	if (ret) {
 		printf("%s: TIMEOUT!!! MBRDDATA_VALID is not zero\n", __func__);
 		hang();
