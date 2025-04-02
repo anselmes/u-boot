@@ -230,6 +230,7 @@ bool ddr_ecc_dbe_status(void)
 
 int sdram_mmr_init_full(struct udevice *dev)
 {
+	int i, ret = 0;
 	struct altera_sdram_plat *plat = dev_get_plat(dev);
 	struct altera_sdram_priv *priv = dev_get_priv(dev);
 	struct io96b_info *io96b_ctrl = malloc(sizeof(*io96b_ctrl));
@@ -237,8 +238,6 @@ int sdram_mmr_init_full(struct udevice *dev)
 	struct bd_info bd = {0};
 	bool full_mem_init = false, is_ddr_hang_be4_rst = false;
 	phys_size_t hw_size;
-	int ret = 0;
-	int i;
 	u32 reg = readl(socfpga_get_sysmgr_addr() + SYSMGR_SOC64_BOOT_SCRATCH_COLD0);
 	enum reset_type reset_t = get_reset_type(reg);
 
@@ -388,7 +387,18 @@ int sdram_mmr_init_full(struct udevice *dev)
 	if (!is_ddr_in_use(dev)) {
 		hw_size = uib_ctrl->overall_size;
 	} else {
-		hw_size = (phys_size_t)io96b_ctrl->overall_size * SZ_1G / SZ_8;
+		/* ECC status */
+		ret = ecc_enable_status(io96b_ctrl);
+		if (ret) {
+			printf("DDR: Failed to get DDR ECC status\n");
+
+			goto err;
+		}
+
+		hw_size = io96b_ctrl->overall_size;
+
+		if (io96b_ctrl->inline_ecc)
+			hw_size = CALC_INLINE_ECC_HW_SIZE(hw_size);
 	}
 
 	if (gd->ram_size != hw_size) {
@@ -410,13 +420,6 @@ int sdram_mmr_init_full(struct udevice *dev)
 	       gd->ram_size >> 20);
 
 	if (is_ddr_in_use(dev)) {
-		/* ECC status */
-		ret = ecc_enable_status(io96b_ctrl);
-		if (ret) {
-			printf("DDR: Failed to get DDR ECC status\n");
-
-			goto err;
-		}
 
 		/*
 		 * Is HPS cold or warm reset? If yes, Skip full memory initialization if ECC
@@ -478,7 +481,6 @@ int sdram_mmr_init_full(struct udevice *dev)
 
 	/* Ensure sanity memory test passing */
 	sdram_size_check(&bd);
-
 	printf("%s: size check success\n", (is_ddr_in_use(dev) ? io96b_ctrl->ddr_type : "HBM"));
 
 	sdram_set_firewall(&bd);

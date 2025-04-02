@@ -28,12 +28,37 @@
 	};
 
 	memory {
-		/*  if run HBM on FIB device, set to 1GB
-		 *  reg = <0 0x00000000 0 0x40000000>;
+
+		/*
+		 * When LPDDR ECC is enabled, the last 1/8 of the memory region must
+		 * be reserved for the Inline ECC buffer.
+		 *
+		 * Example for memory size with 2GB:
+		 * memory {
+		 *	reg = <0x0 0x00000000 0x0 0x80000000>;
+		 * };
+		 *
+		 * Example for memory size with 8GB:
+		 * memory {
+		 *	reg = <0x0 0x00000000 0x0 0x80000000>,
+		 *	      <0x1 0x00000000 0x1 0x80000000>;
+		 * };
+		 *
+		 *
+		 * Example for memory size with 2GB with LPDDR Inline ECC ON:
+		 * memory {
+		 *	reg = <0x0 0x00000000 0x0 0x70000000>;
+		 * };
+		 *
+		 * Example for memory size with 8GB with LPDDR Inline ECC ON:
+		 * memory {
+		 *	reg = <0x0 0x00000000 0x0 0x80000000>,
+		 *	      <0x1 0x00000000 0x1 0x40000000>;
+		 * };
 		 */
 
-		/* 2GB */
-		reg = <0 0x00000000 0 0x80000000>;
+		/* Default memory size is 2GB */
+		reg = <0x0 0x00000000 0x0 0x80000000>;
 	};
 };
 
