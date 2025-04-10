@@ -4,7 +4,10 @@
  *
  */
 
+#include <asm/arch/mailbox_s10.h>
+#include <asm/arch/smmu_s10.h>
 #include <spl.h>
+#include <dm/uclass.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
