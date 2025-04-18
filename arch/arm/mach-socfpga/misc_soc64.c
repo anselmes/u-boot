@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (C) 2016-2025 Intel Corporation <www.intel.com>
+ * Copyright (C) 2025 Altera Corporation <www.altera.com>
  *
  */
 
@@ -97,9 +98,9 @@ u32 socfpga_get_jtag_id(void)
 int print_cpuinfo(void)
 {
 #if IS_ENABLED(CONFIG_TARGET_SOCFPGA_AGILEX5)
-	puts("CPU:   Intel FPGA SoCFPGA Platform (ARMv8 64bit Cortex-A55/A76)\n");
+	puts("CPU:   Altera FPGA SoCFPGA Platform (ARMv8 64bit Cortex-A55/A76)\n");
 #else
-	puts("CPU:   Intel FPGA SoCFPGA Platform (ARMv8 64bit Cortex-A53)\n");
+	puts("CPU:   Altera FPGA SoCFPGA Platform (ARMv8 64bit Cortex-A53)\n");
 #endif
 	return 0;
 }
