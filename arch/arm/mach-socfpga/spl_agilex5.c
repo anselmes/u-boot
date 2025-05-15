@@ -79,6 +79,12 @@ void board_init_f(ulong dummy)
 		hang();
 	}
 
+	ret = uclass_get_device(UCLASS_POWER_DOMAIN, 0, &dev);
+	if (ret) {
+		debug("PSS SRAM power-off failed: %d\n", ret);
+		hang();
+	}
+
 #if CONFIG_IS_ENABLED(ALTERA_SDRAM)
 	ret = uclass_get_device(UCLASS_RAM, 0, &dev);
 	if (ret) {
