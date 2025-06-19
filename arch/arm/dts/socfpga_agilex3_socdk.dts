@@ -185,12 +185,12 @@
 
 			qspi_boot: partition@0 {
 				label = "u-boot";
-				reg = <0x0 0x04200000>;
+				reg = <0x0 0x00600000>;
 			};
 
-			root: partition@4200000 {
+			root: partition@600000 {
 				label = "root";
-				reg = <0x04200000 0x0BE00000>;
+				reg = <0x00600000 0x03a00000>;
 			};
 		};
 	};
