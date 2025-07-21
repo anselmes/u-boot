@@ -270,6 +270,13 @@ void socfpga_get_managers_addr(void)
 	if (ret)
 		hang();
 
+	if (!IS_ENABLED(CONFIG_TARGET_SOCFPGA_AGILEX5)) {
+		ret = socfpga_get_base_addr("altr,sys-mgr",
+					    &socfpga_sysmgr_base);
+		if (ret)
+			hang();
+	}
+
 	if (IS_ENABLED(CONFIG_TARGET_SOCFPGA_AGILEX) ||
 	    IS_ENABLED(CONFIG_TARGET_SOCFPGA_AGILEX7M))
 		ret = socfpga_get_base_addr("intel,agilex-clkmgr",
