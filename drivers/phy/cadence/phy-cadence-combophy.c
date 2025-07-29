@@ -10,6 +10,7 @@
  */
 
 #include <clk.h>
+#include <common.h>
 #include <generic-phy.h>
 #include <reset.h>
 #include <reset-uclass.h>
