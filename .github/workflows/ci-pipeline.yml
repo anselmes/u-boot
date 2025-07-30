@@ -118,7 +118,7 @@ jobs:
      steps:
       - name: Cleaning workspace
         run: |
-          rm -rf application.devops.github.pr.workflow
+          rm -rf applications.devops.build-bot.github-pr-workflow
           rm -rf ${GITHUB_WORKSPACE}/.git*
 
       - name: Download Uboot artifacts
@@ -147,7 +147,7 @@ jobs:
        run: |
           tmp_dir=$(mktemp -d -t get-prerequisite-binary-XXXX)
           cd $tmp_dir
-          rm -rf application.devops.github.pr.workflow
+          rm -rf applications.devops.build-bot.github-pr-workflow
           git config --global credential.helper store
           git clone https://${{ secrets.GIT_USER }}:${{ secrets.GIT_TOKEN }}@github.com/altera-innersource/applications.devops.build-bot.github-pr-workflow
           cd applications.devops.build-bot.github-pr-workflow
@@ -166,7 +166,7 @@ jobs:
        run: |
           tmp_dir=$(mktemp -d -t get-prerequisite-binary-XXXX)
           cd $tmp_dir
-          rm -rf application.devops.github.pr.workflow
+          rm -rf applications.devops.build-bot.github-pr-workflow
           git config --global credential.helper store
           git clone https://${{ secrets.GIT_USER }}:${{ secrets.GIT_TOKEN }}@github.com/altera-innersource/applications.devops.build-bot.github-pr-workflow
           cd applications.devops.build-bot.github-pr-workflow
