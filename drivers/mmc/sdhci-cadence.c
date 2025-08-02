@@ -15,6 +15,7 @@
 #include <linux/sizes.h>
 #include <linux/libfdt.h>
 #include <mmc.h>
+#include <reset.h>
 #include <sdhci.h>
 #include "sdhci-cadence.h"
 
@@ -291,6 +292,7 @@ static int sdhci_cdns_probe(struct udevice *dev)
 	struct mmc_uclass_priv *upriv = dev_get_uclass_priv(dev);
 	struct sdhci_cdns_plat *plat = dev_get_plat(dev);
 	struct sdhci_host *host = dev_get_priv(dev);
+	struct reset_ctl_bulk reset_bulk;
 	fdt_addr_t base;
 	int ret;
 
@@ -310,6 +312,12 @@ static int sdhci_cdns_probe(struct udevice *dev)
 		plat->version = CDNS_SDHCI_V6;
 	else
 		plat->version = CDNS_SDHCI_V4;
+
+	ret = reset_get_bulk(dev, &reset_bulk);
+	if (ret)
+		dev_warn(dev, "Can't get reset: %d\n", ret);
+	else
+		reset_deassert_bulk(&reset_bulk);
 
 	host->name = dev->name;
 	host->ioaddr = plat->hrs_addr + SDHCI_CDNS_SRS_BASE;
