@@ -230,6 +230,83 @@ static int __maybe_unused sdhci_cdns_execute_tuning(struct udevice *dev,
 	return sdhci_cdns_set_tune_val(plat, end_of_streak - max_streak / 2);
 }
 
+static int __maybe_unused sdhci_cdns_v6_sd_tuning(struct mmc *mmc,
+						  unsigned int opcode)
+{
+	struct sdhci_host *host = dev_get_priv(mmc->dev);
+	struct mmc_cmd cmd;
+	unsigned int ctrl, blk_size;
+	int ret = 0;
+	char tuning_loop_counter = 0;
+
+	ctrl = sdhci_readw(host, SDHCI_HOST_CONTROL2);
+	ctrl |= SDHCI_CTRL_EXEC_TUNING;
+	sdhci_writew(host, ctrl, SDHCI_HOST_CONTROL2);
+
+	sdhci_writel(host, SDHCI_INT_DATA_AVAIL, SDHCI_INT_ENABLE);
+	sdhci_writel(host, SDHCI_INT_DATA_AVAIL, SDHCI_SIGNAL_ENABLE);
+
+	blk_size = SDHCI_MAKE_BLKSZ(SDHCI_DEFAULT_BOUNDARY_ARG, 64);
+	sdhci_writew(host, blk_size, SDHCI_BLOCK_SIZE);
+	sdhci_writew(host, SDHCI_TRNS_READ, SDHCI_TRANSFER_MODE);
+
+	cmd.cmdidx = opcode;
+	cmd.resp_type = MMC_RSP_R1;
+	cmd.cmdarg = 0;
+
+	do {
+		ret = mmc_send_cmd(mmc, &cmd, NULL);
+		ctrl = sdhci_readw(host, SDHCI_HOST_CONTROL2);
+		if (ret || tuning_loop_counter++ == SDHCI_CDNS_MAX_TUNING_LOOP) {
+			dev_dbg(mmc->dev, "%s: Tuning failed: ret=%d, counter=%d\n",
+				__func__, ret, tuning_loop_counter);
+			break;
+		}
+		if (cmd.cmdidx == MMC_CMD_SEND_TUNING_BLOCK)
+			udelay(1);
+
+	} while (ctrl & SDHCI_CTRL_EXEC_TUNING);
+
+	if (ret || tuning_loop_counter > SDHCI_CDNS_MAX_TUNING_LOOP ||
+	    !(ctrl & SDHCI_CTRL_TUNED_CLK)) {
+		if (!ret)
+			ret = -EIO;
+		dev_dbg(mmc->dev, "%s: Tuning failed: ret=%d\n", __func__, ret);
+
+		ctrl &= ~SDHCI_CTRL_TUNED_CLK;
+		ctrl &= ~SDHCI_CTRL_EXEC_TUNING;
+		sdhci_writew(host, ctrl, SDHCI_HOST_CONTROL2);
+	}
+
+	/* Enable only interrupts served by the SD controller */
+	sdhci_writel(host, SDHCI_INT_DATA_MASK | SDHCI_INT_CMD_MASK, SDHCI_INT_ENABLE);
+
+	return ret;
+}
+
+static int __maybe_unused sdhci_cdns_select_tuning(struct udevice *dev,
+						   unsigned int opcode)
+{
+	struct sdhci_cdns_plat *plat = dev_get_plat(dev);
+	struct mmc *mmc = &plat->mmc;
+
+	if (device_is_compatible(dev, "cdns,sd6hc")) {
+		if (IS_SD(mmc)) {
+			/* Use SD v6-specific tuning procedure */
+			return sdhci_cdns_v6_sd_tuning(mmc, opcode);
+		} else if (IS_MMC(mmc)) {
+			/* Use standard tuning for eMMC on v6 */
+			return sdhci_cdns_execute_tuning(dev, opcode);
+		}
+	} else {
+		/* Use standard tuning for both SD and eMMC on v4 */
+		return sdhci_cdns_execute_tuning(dev, opcode);
+	}
+
+	/* Unsupported configuration */
+	return -EOPNOTSUPP;
+}
+
 static struct dm_mmc_ops sdhci_cdns_mmc_ops;
 
 static int sdhci_cdns_bind(struct udevice *dev)
@@ -339,7 +416,7 @@ static int sdhci_cdns_probe(struct udevice *dev)
 	host->quirks |= SDHCI_QUIRK_WAIT_SEND_CMD;
 	sdhci_cdns_mmc_ops = sdhci_ops;
 #if CONFIG_IS_ENABLED(MMC_SUPPORTS_TUNING)
-	sdhci_cdns_mmc_ops.execute_tuning = sdhci_cdns_execute_tuning;
+	sdhci_cdns_mmc_ops.execute_tuning = sdhci_cdns_select_tuning;
 #endif
 
 	ret = mmc_of_parse(dev, &plat->cfg);
