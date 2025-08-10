@@ -62,7 +62,14 @@
  */
 #define SDHCI_CDNS_MAX_TUNING_LOOP	40
 
+/* Cadence SDHCI controller hardware version */
+enum cdns_sdhci_version {
+	CDNS_SDHCI_V4,
+	CDNS_SDHCI_V6,
+};
+
 struct sdhci_cdns_plat {
+	enum cdns_sdhci_version version;
 	struct mmc_config cfg;
 	struct mmc mmc;
 	void __iomem *hrs_addr;
