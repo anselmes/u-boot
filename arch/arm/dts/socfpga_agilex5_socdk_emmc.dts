@@ -21,6 +21,8 @@
 	non-removable;
 	disable-wp;
 	cap-mmc-highspeed;
+	mmc-ddr-1_8v;
+	mmc-hs200-1_8v;
 
 	bus-width = <8>;
 	vmmc-supply = <&sd_emmc_power>;
@@ -42,6 +44,26 @@
 	cdns,ctrl-hrs10-lpbk_ctrl-delay-emmc-sdr = <0x30000>;
 	cdns,ctrl-hrs16-slave-ctrl-emmc-sdr = <0x101>;
 	cdns,ctrl-hrs07-timing-delay-emmc-sdr = <0xA0001>;
+
+	// eMMC DDR mode timing configuration
+	cdns,phy-dqs-timing-delay-emmc-ddr = <0x780001>;
+	cdns,phy-gate-lpbk_ctrl-delay-emmc-ddr = <0x81a40040>;
+	cdns,phy-dll-slave-ctrl-emmc-ddr = <0x00000000>;
+	cdns,phy-dq-timing-delay-emmc-ddr = <0x10000001>;
+	cdns,ctrl-hrs09-timing-delay-emmc-ddr = <0x1800c>;
+	cdns,ctrl-hrs10-lpbk_ctrl-delay-emmc-ddr = <0x20000>;
+	cdns,ctrl-hrs16-slave-ctrl-emmc-ddr = <0x11000001>;
+	cdns,ctrl-hrs07-timing-delay-emmc-ddr = <0x90001>;
+
+	// eMMC HS200 mode timing configuration
+	cdns,phy-dqs-timing-delay-emmc-hs200 = <0x780004>;
+	cdns,phy-gate-lpbk_ctrl-delay-emmc-hs200 = <0x81a40040>;
+	cdns,phy-dll-slave-ctrl-emmc-hs200 = <0x4dc600>;
+	cdns,phy-dq-timing-delay-emmc-hs200 = <0x1>;
+	cdns,ctrl-hrs09-timing-delay-emmc-hs200 = <0xf1c18000>;
+	cdns,ctrl-hrs10-lpbk_ctrl-delay-emmc-hs200 = <0x80000>;
+	cdns,ctrl-hrs16-slave-ctrl-emmc-hs200 = <0x7777>;
+	cdns,ctrl-hrs07-timing-delay-emmc-hs200 = <0x90000>;
 
 	bootph-all;
 };
