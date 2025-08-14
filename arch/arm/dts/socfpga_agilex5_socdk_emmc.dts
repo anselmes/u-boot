@@ -23,11 +23,13 @@
 	cap-mmc-highspeed;
 	mmc-ddr-1_8v;
 	mmc-hs200-1_8v;
+	mmc-hs400-1_8v;
 
 	bus-width = <8>;
 	vmmc-supply = <&sd_emmc_power>;
 	vqmmc-supply = <&emmc_io_1v8_reg>;
 	max-frequency = <200000000>;
+	sdhci-caps = <0x0 0x040000>;	/* SDHCI_CAN_DO_8BIT */
 
 	// eMMC legacy mode timing configuration
 	cdns,phy-dqs-timing-delay-sd-ds = <0x00780000>;
@@ -65,9 +67,16 @@
 	cdns,ctrl-hrs16-slave-ctrl-emmc-hs200 = <0x7777>;
 	cdns,ctrl-hrs07-timing-delay-emmc-hs200 = <0x90000>;
 
+	// eMMC HS400 mode timing configuration
+	cdns,phy-dqs-timing-delay-emmc-hs400 = <0x680004>;
+	cdns,phy-gate-lpbk_ctrl-delay-emmc-hs400 = <0x81fc0040>;
+	cdns,phy-dll-slave-ctrl-emmc-hs400 = <0x4d4b40>;
+	cdns,phy-dq-timing-delay-emmc-hs400 = <0x10000001>;
+	cdns,ctrl-hrs09-timing-delay-emmc-hs400 = <0xf1c18000>;
+	cdns,ctrl-hrs10-lpbk_ctrl-delay-emmc-hs400 = <0x80000>;
+	cdns,ctrl-hrs16-slave-ctrl-emmc-hs400 = <0x11000001>;
+	cdns,ctrl-hrs07-timing-delay-emmc-hs400 = <0x90001>;
+
 	bootph-all;
 };
 
-&nand {
-	status = "disabled";
-};
