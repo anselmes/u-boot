@@ -152,7 +152,7 @@ static void sdhci_cdns_set_control_reg(struct sdhci_host *host)
 	if (IS_SD(mmc))
 		sdhci_set_control_reg(host);
 
-	if (plat->version == CDNS_SDHCI_V6)
+	if (device_is_compatible(mmc->dev, "cdns,sd6hc"))
 		sdhci_cdns6_phy_adj(mmc->dev, plat, mmc->selected_mode);
 }
 
@@ -167,7 +167,7 @@ static int sdhci_cdns_set_tune_val(struct sdhci_cdns_plat *plat,
 	u32 tmp;
 	int i, ret;
 
-	if (plat->version == CDNS_SDHCI_V6)
+	if (device_is_compatible(plat->mmc.dev, "cdns,sd6hc"))
 		return sdhci_cdns6_set_tune_val(plat, val);
 
 	if (WARN_ON(!FIELD_FIT(SDHCI_CDNS_HRS06_TUNE, val)))
@@ -297,7 +297,7 @@ static int __maybe_unused sdhci_cdns_select_tuning(struct udevice *dev,
 	struct sdhci_cdns_plat *plat = dev_get_plat(dev);
 	struct mmc *mmc = &plat->mmc;
 
-	if (plat->version == CDNS_SDHCI_V6) {
+	if (device_is_compatible(dev, "cdns,sd6hc")) {
 		if (IS_SD(mmc)) {
 			/* Use SD v6-specific tuning procedure */
 			return sdhci_cdns_v6_sd_tuning(mmc, opcode);
@@ -341,15 +341,6 @@ static int sdhci_cdns_probe(struct udevice *dev)
 	if (!plat->hrs_addr)
 		return -ENOMEM;
 
-	/*
-	 * Set controller version based on the compatible string.
-	 * "cdns,sd6hc" indicates version 6; otherwise, version 4 is assumed.
-	 */
-	if (device_is_compatible(dev, "cdns,sd6hc"))
-		plat->version = CDNS_SDHCI_V6;
-	else
-		plat->version = CDNS_SDHCI_V4;
-
 	ret = reset_get_bulk(dev, &reset_bulk);
 	if (ret)
 		dev_warn(dev, "Can't get reset: %d\n", ret);
@@ -369,7 +360,7 @@ static int sdhci_cdns_probe(struct udevice *dev)
 	if (ret)
 		return ret;
 
-	if (plat->version == CDNS_SDHCI_V6)
+	if (device_is_compatible(dev, "cdns,sd6hc"))
 		ret = sdhci_cdns6_phy_init(dev, plat);
 	else
 		ret = sdhci_cdns_phy_init(plat, gd->fdt_blob, dev_of_offset(dev));
