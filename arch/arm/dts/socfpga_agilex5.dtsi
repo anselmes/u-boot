@@ -331,7 +331,7 @@
 		mmc: mmc0@10808000 {
 			#address-cells = <1>;
 			#size-cells = <0>;
-			compatible = "cdns,sd6hc";
+			compatible = "altr,agilex5-sd6hc", "cdns,sd6hc";
 			reg = <0x10808000 0x1000>;
 			interrupts = <0 96 4>;
 			clocks = <&clkmgr AGILEX5_L4_MP_CLK>,
