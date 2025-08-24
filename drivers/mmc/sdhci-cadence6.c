@@ -300,7 +300,7 @@ int sdhci_cdns6_phy_adj(struct udevice *dev, struct sdhci_cdns_plat *plat, u32 m
 
 int sdhci_cdns6_phy_init(struct udevice *dev, struct sdhci_cdns_plat *plat)
 {
-	return sdhci_cdns6_phy_adj(dev, plat, SDHCI_CDNS_HRS06_MODE_SD);
+	return sdhci_cdns6_phy_adj(dev, plat, MMC_LEGACY);
 }
 
 int sdhci_cdns6_set_tune_val(struct sdhci_cdns_plat *plat, unsigned int val)
