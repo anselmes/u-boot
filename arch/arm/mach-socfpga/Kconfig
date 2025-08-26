@@ -116,6 +116,9 @@ config TARGET_SOCFPGA_AGILEX5_OOBE2
 config TARGET_SOCFPGA_AGILEX5_NAND2
 	bool "Enable build that bootable only on Agilex5 NAND2 DevKit"
 
+config TARGET_SOCFPGA_AGILEX5_013B
+	bool "Enable build that bootable only on Agilex5 ESeries_013B DevKit"
+
 config TARGET_SOCFPGA_AGILEX5_EMMC
 	bool "Enable build that bootable only on Agilex5 EMMC DevKit"
 
