@@ -460,17 +460,6 @@ int sdhci_set_clock(struct mmc *mmc, unsigned int clock)
 		}
 	}
 
-	/*
-	 * TODO: Remove this workaround once proper clock divider calculation
-	 * for UHS SDR104 mode is implemented.
-	 *
-	 * This forces the divider to 0x01 for SDR104 mode to enable operation.
-	 * A correct fix should determine the divider value based on the
-	 * desired clock frequency and hardware capabilities.
-	 */
-	if (mmc->selected_mode == UHS_SDR104)
-		div = 0x01;
-
 	clk |= (div & SDHCI_DIV_MASK) << SDHCI_DIVIDER_SHIFT;
 	clk |= ((div & SDHCI_DIV_HI_MASK) >> SDHCI_DIV_MASK_LEN)
 		<< SDHCI_DIVIDER_HI_SHIFT;
