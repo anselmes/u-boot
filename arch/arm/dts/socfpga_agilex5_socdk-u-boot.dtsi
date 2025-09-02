@@ -116,7 +116,7 @@
 	disable-wp;
 	vmmc-supply = <&sd_emmc_power>;
 	vqmmc-supply = <&sd_io_1v8_reg>;
-	max-frequency = <200000000>;
+	max-frequency = <100000000>;
 
 	// SD card default speed (DS) and UHS-I SDR12 mode timing configuration
 	cdns,phy-dqs-timing-delay-sd-ds = <0x00780000>;
