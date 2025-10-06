@@ -16,7 +16,6 @@
 DECLARE_GLOBAL_DATA_PTR;
 
 #define PGTABLE_OFF	0x4000
-#define GUARD_REGION	0x200
 
 /* Initialize SDRAM ECC bits to avoid false DBE */
 void sdram_init_ecc_bits(void)
@@ -32,11 +31,11 @@ void sdram_init_ecc_bits(void)
 
 	printf("DDRCAL: Scrubbing ECC RAM (%ld MiB).\n", size >> 20);
 
-	memset((void *)start_addr, 0, PGTABLE_SIZE + PGTABLE_OFF + GUARD_REGION);
+	memset((void *)start_addr, 0, PGTABLE_SIZE + PGTABLE_OFF);
 	gd->arch.tlb_addr = start_addr + PGTABLE_OFF;
 	gd->arch.tlb_size = PGTABLE_SIZE;
-	start_addr += PGTABLE_SIZE + PGTABLE_OFF + GUARD_REGION;
-	size -= PGTABLE_OFF + PGTABLE_SIZE + GUARD_REGION;
+	start_addr += PGTABLE_SIZE + PGTABLE_OFF;
+	size -= PGTABLE_OFF + PGTABLE_SIZE;
 
 	dcache_enable();
 
